@@ -1,0 +1,209 @@
+from random import choice, randint, shuffle
+from collections import Counter, defaultdict
+import typing
+import os
+# import numpy as np
+# import pandas as pd
+import csv
+import math
+import random
+
+
+class PassengerQueue:
+    def __init__(self):
+        self.items=[]
+
+    def isEmpty(self):
+        return self.items == []
+
+    def enqueue(self, item):
+        return self.items.insert(0, item)
+
+    def dequeue(self):
+        return self.items.pop()
+
+    def size(self):
+        return len(self.items)
+
+class Passenger:
+
+    """
+     This class describes all passengers and calculates waiting time operations for them.
+    """
+    def __init__(self):
+
+        self.pass_num=0
+        return
+
+
+    def getPass(self):
+         """
+         Using pseudo- random generator, we generate the data required such as number of passengers.
+        Average wait-time will be computed.
+
+
+         :return: number of passengers
+         """
+         pass_num = random.randint(150, 500)
+         return pass_num
+
+class Agent:
+
+    """
+     This class describes all passengers and calculates waiting time operations for them.
+    """
+
+
+    def get_Agent_Rate(self):
+        agent_rate=random.randint(120,600)
+        return agent_rate
+
+    def Serving_Time(agent_num,rate):
+        cum_rate = 0
+        for agent in range(agent_num):
+            cum_rate = cum_rate + rate
+        serving_time = cum_rate / agent_num
+
+        return serving_time
+
+class Agent_Serves_Passenger:
+    """
+    This class describes  check-in agents and estimates the required number
+    to serve customers boarding a particular flight.
+amount: no of pass served by the agent
+    """
+
+
+    def __init__(self,agent_num,agent_rate):
+        self.agent_num=0
+        self.presentPassenger = None
+        self.time_rate=0
+
+    def setIdle(self):
+
+            if self.time_rate ==0:
+                self.presentPassenger = None
+
+    def isBusy(self):
+
+        if self.presentPassenger != None:
+            return True
+        else:
+            return False
+
+
+
+    def getAgent(self):
+        """
+    Using pseudo- random generator, we generate the data required such as number of check-in agents
+        required to serve the customers.Utilisation will be checked upon as a result of simulation.
+
+    :return: number of check-in agents required
+        """
+        agent_num = random.randint(2,5)
+        return agent_num
+
+
+
+
+
+
+
+def new_Passenger():
+
+    pass_num = random.randint(150, 501)
+    if pass_num == 500:
+
+        return True
+    else:
+        return False
+
+
+def simulate(pass_num,agent_num):
+
+
+
+
+    agent_rate = Agent.get_Agent_Rate(Agent)
+    serving_time = Agent.Serving_Time(agent_num, agent_rate)
+
+    airport_agent = Agent_Serves_Passenger(agent_num,agent_rate)  # creating object of class Cashier_serving_Customer
+    waiting_Times = []  # list for storing wait time of each customer
+    queue = PassengerQueue()
+
+
+
+
+    for i in range(pass_num):
+        # When the customer has arrived at the restaurant and is pushed into the queue
+
+        len_of_queue = queue.size()
+        Passenger.waiting_time_queue = len_of_queue * serving_time
+        queue.enqueue(Passenger.getPass(Passenger))
+        # When the customer at the counter has been served
+        if (not airport_agent.isBusy()) and (not queue.isEmpty()):
+                nextPass = queue.dequeue()
+                waiting_time = Passenger.waiting_time_queue + agent_rate
+                waiting_Times.append(serving_time)
+                print(queue)
+                  # calculates the wait time for each customer and appends it to the list of waitingTimes
+
+        airport_agent.setIdle()  # current customer has now left and the cashier is available to serve the next customer
+
+    #print(waiting_Times)
+    #average_waiting_time=sum(waiting_Times)/len(waiting_Times)
+    #return average_waiting_time
+
+
+# class Flight:
+#     """
+#     This class describes  multiple flights boarded by the customers.
+#
+#     """
+#
+#
+#     def __init__(self):
+#         self.flight_num=0
+#         self.inter_flight_time=0
+#         return
+#
+#     def no_of_flight(self):
+#         """
+#         This function describes the runs to be simulated to achieve the number of flights for particular number of customers.
+#
+#         :return: multiple flight details
+#         """
+#
+#         flight_num = random.randint(1,4)
+#         inter_flight_time=random.randint(1,3)
+#
+#         return flight_num, inter_flight_time
+#
+
+
+
+if __name__ == '__main__':
+
+
+        trial=simulate(200,3)
+        print(trial)
+        # call_passenger=Passenger()
+        # no_of_passenger = call_passenger.no_of_passenger()
+        #
+        # print('Number of passengers are:',no_of_passenger)
+        #
+        # call_agent = Agent()
+        # no_of_agent=call_agent.no_of_agent()
+
+        # print('Number of agents are:',no_of_agent)
+
+        # call_flight = Flight()
+        # no_of_flight=call_flight.no_of_flight()
+        #
+        # print('Number of flights and their inter-arrival time are:',no_of_flight)
+        #
+
+
+# 215 passengers 3 check in counters
+# queue entry exit how much time in queue
+# check in : same rates 10 pass per hour 15 20 ?
