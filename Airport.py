@@ -95,7 +95,10 @@ amount: no of pass served by the agent
         else:
             return False
 
-
+    def passengers_served(agent_rate, agent_num):
+        pass_num = 5400 / agent_rate
+        total_pass_num = pass_num * agent_num
+        return pass_num
 
     def getAgent(self):
         """
@@ -104,7 +107,7 @@ amount: no of pass served by the agent
 
     :return: number of check-in agents required
         """
-        gen_agent_num=[2,3,4]
+        gen_agent_num=[2,3,4,5]
         agent_num = choice(gen_agent_num)
 
         return agent_num
@@ -124,17 +127,10 @@ class Flight:
         # self.inter_flight_time = 0
         return
 
-    def get_Flight(self):
-        """
-         This function describes the runs to be simulated to achieve the number of flights for particular number of customers.
-
-        :return: multiple flight details
-        """
-        gen_flight_num = [1, 2, 3]
-        flight_num = choice(gen_flight_num)
-        # inter_flight_time = random.randint(1, 3)
-
-        return flight_num
+    def gen_flight(self):
+        process = [100, 150, 200]
+        weights = [0, 1.5, 3]
+        return choice(process, weights)
 
 
 def simulate(pass_num,agent_num):
@@ -171,6 +167,46 @@ def simulate(pass_num,agent_num):
     average_waiting_time=(sum(waiting_Times)/len(waiting_Times))/60
     return average_waiting_time
 
+def flight_simulator(flight_passenger1,flight_passenger2,flight_passenger3,agent_rate,agent_num):
+    wait_Times=[]
+    queue1 = PassengerQueue()
+    checkin_agent = Agent_Serves_Passenger(agent_num, agent_rate)
+    serving_time = Agent.Serving_Time(agent_num, agent_rate)
+
+    served=Agent_Serves_Passenger.passengers_served()
+    if flight_passenger1 < served:
+        pass_num=flight_passenger1
+    else:
+        pass_num=served
+
+    no_of_pass = int(pass_num / agent_num)
+    queue_len = Passenger.queue_length(Passenger, no_of_pass)
+
+
+
+
+
+    for i in range(pass_num):
+        # When the customer has arrived at the restaurant and is pushed into the queue
+        Passenger.wait_time_queue = queue_len * serving_time
+        # print(queue_len)
+
+        # print(queue_len*serving_time)
+        #print(Passenger.waiting_time_queue)
+        queue1.enqueue(Passenger.getPass(Passenger))
+        # When the customer at the counter has been served
+        if (not checkin_agent.isBusy() and (not queue1.isEmpty())):
+                nextPass = queue1.dequeue()
+                waiting_time = Passenger.wait_time_queue + agent_rate
+                wait_Times.append(waiting_time)
+                # print(waiting_Times)
+                  # calculates the wait time for each customer and appends it to the list of waitingTimes
+        #print(queue)
+        checkin_agent.setIdle()  # current customer has now left and the cashier is available to serve the next customer
+
+    #print(waiting_Times)
+    avg_waiting_time=(sum(wait_Times)/len(wait_Times))/60
+    return avg_waiting_time
 
 
 
@@ -207,6 +243,17 @@ if __name__ == '__main__':
         #print(df)
         df1 = df.groupby(['No_of_passengers', 'No_of_agents'])[['Average_waiting_time']].mean()
         print(df1)
+
+
+
+
+
+
+
+
+
+
+
 
         # for c3 in range(1000):
         #     #pass
