@@ -10,6 +10,10 @@ import random
 
 
 class PassengerQueue:
+    """
+    This class initialises a single queue and defines the size of the queue.
+
+    """
     def __init__(self):
         self.items=[]
 
@@ -62,7 +66,8 @@ class Agent:
 
 
     def get_Agent_Rate(self):
-        return 300
+        agent_list=[120,180,240,300]
+        return choice(agent_list)
 
     def Serving_Time(agent_num,rate):
 
@@ -111,10 +116,23 @@ amount: no of pass served by the agent
 
         return agent_num
 
-    def getNumBaggage(self):
-        bag_list=[0,0,0,1,1,1,1,1,2,2]
-        do_this = random.choice(bag_list)
-        return do_this
+    def compute(self,pass_num, queue1,waiting_Times,queue_len,serving_time,checkin_agent):
+
+        for i in range(pass_num):
+            # When the customer has arrived at the restaurant and is pushed into the queue
+            Passenger.wait_time_queue = queue_len * serving_time
+            queue1.enqueue(Passenger.getPass(Passenger))
+            # When the customer at the counter has been served
+            if (not checkin_agent.isBusy() and (not queue1.isEmpty())):
+                nextPass = queue1.dequeue()
+                waiting_time = Passenger.wait_time_queue + agent_rate
+                waiting_Times.append(waiting_time)
+
+                # calculates the wait time for each customer and appends it to the list of waitingTimes
+            checkin_agent.setIdle()  # current customer has now left and the cashier is available to serve the next customer
+
+        return waiting_Times
+
 
 class Flight:
     """    This class describes  multiple flights boarded by the customers.
@@ -123,7 +141,7 @@ class Flight:
 
     def __init__(self):
         self.flight_num = 0
-        # self.inter_flight_time = 0
+
         return
 
     def gen_flight(self):
@@ -132,160 +150,89 @@ class Flight:
         return choice(process)
 
 
-def simulate(pass_num,agent_num):
+    def simulate(pass_num,agent_num,agent_rate):
+        waiting_Times = []
+        serving_time = Agent.Serving_Time(agent_num, agent_rate)
+        airport_agent = Agent_Serves_Passenger(agent_num,agent_rate)  # creating object of class Cashier_serving_Customer
+          # list for storing wait time of each customer
+        queue = PassengerQueue()
+        no_of_pass =int( pass_num / agent_num)
+        queue_len = Passenger.queue_length(Passenger, no_of_pass)
+        wait_Times=Agent_Serves_Passenger.compute(Agent_Serves_Passenger,pass_num, queue,waiting_Times, queue_len, serving_time, airport_agent)
+        average_waiting_time=(sum(wait_Times)/len(wait_Times))/60
+        return average_waiting_time
+
+    def flight_simulator(flight_passenger1,flight_passenger2,flight_passenger3,agent_rate,agent_num):
+        wait_Times=[]
+        queue1 = PassengerQueue()
+        checkin_agent = Agent_Serves_Passenger(agent_num, agent_rate)
+        serving_time = Agent.Serving_Time(agent_num, agent_rate)
+
+        served=Agent_Serves_Passenger.passengers_served(agent_rate,agent_num)
+
+        if flight_passenger1 < served:
+            pass_num=flight_passenger1
+        #     pass_num agents will serve in 1.5 hrs
+        else:
+            pass_num=served
+            pass_num_remaining = flight_passenger1 - served
+            flight_passenger2 += pass_num_remaining
+
+        no_of_pass = int(pass_num / agent_num)
+        queue_len = Passenger.queue_length(Passenger, no_of_pass)
+
+        wait_Times1 = Agent_Serves_Passenger.compute(Agent_Serves_Passenger, pass_num, queue1, wait_Times, queue_len,
+                                                    serving_time, checkin_agent)
 
 
-    agent_rate = Agent.get_Agent_Rate(Agent)
-    serving_time = Agent.Serving_Time(agent_num, agent_rate)
-    # print(serving_time)
-    airport_agent = Agent_Serves_Passenger(agent_num,agent_rate)  # creating object of class Cashier_serving_Customer
-    waiting_Times = []  # list for storing wait time of each customer
-    queue = PassengerQueue()
-    no_of_pass =int( pass_num / agent_num)
-    queue_len = Passenger.queue_length(Passenger, no_of_pass)
-    #print(serving_time)
+        if flight_passenger2 < served:
+            pass_num = flight_passenger2
+        else:
+            pass_num = served
+            pass_num_remaining = flight_passenger2 - served
+            flight_passenger3 += pass_num_remaining
+
+        no_of_pass = int(pass_num / agent_num)
+        queue_len = Passenger.queue_length(Passenger, no_of_pass)
+
+        wait_Times2 = Agent_Serves_Passenger.compute(Agent_Serves_Passenger, pass_num, queue1, wait_Times1, queue_len,
+                                                     serving_time, checkin_agent)
 
 
-    for i in range(pass_num):
-        # When the customer has arrived at the restaurant and is pushed into the queue
-        Passenger.waiting_time_queue = queue_len * serving_time
-        queue.enqueue(Passenger.getPass(Passenger))
-        # When the customer at the counter has been served
-        if (not airport_agent.isBusy() and (not queue.isEmpty())):
-                nextPass = queue.dequeue()
-                waiting_time = Passenger.waiting_time_queue + agent_rate
-                waiting_Times.append(waiting_time)
-                # print(waiting_Times)
-                  # calculates the wait time for each customer and appends it to the list of waitingTimes
-        #print(queue)
-        airport_agent.setIdle()  # current customer has now left and the cashier is available to serve the next customer
+        pass_num=flight_passenger3
+        no_of_pass = int(pass_num / agent_num)
+        queue_len = Passenger.queue_length(Passenger, no_of_pass)
 
-    #print(waiting_Times)
-    average_waiting_time=(sum(waiting_Times)/len(waiting_Times))/60
-    return average_waiting_time
+        wait_Times3 = Agent_Serves_Passenger.compute(Agent_Serves_Passenger, pass_num, queue1, wait_Times2, queue_len,
+                                                     serving_time, checkin_agent)
 
-def flight_simulator(flight_passenger1,flight_passenger2,flight_passenger3,agent_rate,agent_num):
-    wait_Times=[]
-    queue1 = PassengerQueue()
-    checkin_agent = Agent_Serves_Passenger(agent_num, agent_rate)
-    serving_time = Agent.Serving_Time(agent_num, agent_rate)
-
-    served=Agent_Serves_Passenger.passengers_served(agent_rate,agent_num)
-
-    if flight_passenger1 < served:
-        pass_num=flight_passenger1
-    #     pass_num agents will serve in 1.5 hrs
-    else:
-        pass_num=served
-        pass_num_remaining = flight_passenger1 - served
-        flight_passenger2 += pass_num_remaining
-
-    no_of_pass = int(pass_num / agent_num)
-    queue_len = Passenger.queue_length(Passenger, no_of_pass)
-
-
-
-
-    for i in range(pass_num):
-        # When the customer has arrived at the restaurant and is pushed into the queue
-        Passenger.wait_time_queue = queue_len * serving_time
-        queue1.enqueue(Passenger.getPass(Passenger))
-        # When the customer at the counter has been served
-        if (not checkin_agent.isBusy() and (not queue1.isEmpty())):
-                nextPass = queue1.dequeue()
-                waiting_time = Passenger.wait_time_queue + agent_rate
-                wait_Times.append(waiting_time)
-                # print(waiting_Times)
-                  # calculates the wait time for each customer and appends it to the list of waitingTimes
-        #print(queue)
-        checkin_agent.setIdle()  # current customer has now left and the cashier is available to serve the next customer
-
-    if flight_passenger2 < served:
-        pass_num = flight_passenger2
-    else:
-        pass_num = served
-        pass_num_remaining = flight_passenger2 - served
-        flight_passenger3 += pass_num_remaining
-
-    no_of_pass = int(pass_num / agent_num)
-    queue_len = Passenger.queue_length(Passenger, no_of_pass)
-
-
-    for i in range(pass_num):
-        # When the customer has arrived at the restaurant and is pushed into the queue
-        Passenger.wait_time_queue = queue_len * serving_time
-        queue1.enqueue(Passenger.getPass(Passenger))
-        # When the customer at the counter has been served
-        if (not checkin_agent.isBusy() and (not queue1.isEmpty())):
-            nextPass = queue1.dequeue()
-            waiting_time = Passenger.wait_time_queue + agent_rate
-            wait_Times.append(waiting_time)
-            # print(waiting_Times)
-            # calculates the wait time for each customer and appends it to the list of waitingTimes
-        # print(queue)
-        checkin_agent.setIdle()  # current customer has now left and the cashier is available to serve the next customer
-
-
-
-    pass_num=flight_passenger3
-    no_of_pass = int(pass_num / agent_num)
-    queue_len = Passenger.queue_length(Passenger, no_of_pass)
-
-    for i in range(pass_num):
-        # When the customer has arrived at the restaurant and is pushed into the queue
-        Passenger.wait_time_queue = queue_len * serving_time
-        queue1.enqueue(Passenger.getPass(Passenger))
-        # When the customer at the counter has been served
-        if (not checkin_agent.isBusy() and (not queue1.isEmpty())):
-            nextPass = queue1.dequeue()
-            waiting_time = Passenger.wait_time_queue + agent_rate
-            wait_Times.append(waiting_time)
-            # print(waiting_Times)
-            # calculates the wait time for each customer and appends it to the list of waitingTimes
-        # print(queue)
-        checkin_agent.setIdle()  # current customer has now left and the cashier is available to serve the next customer
-
-
-
-
-    avg_waiting_time=(sum(wait_Times)/len(wait_Times))/60
-    return avg_waiting_time
-
-
+        avg_waiting_time=(sum(wait_Times3)/len(wait_Times3))/60
+        return avg_waiting_time
 
 
 if __name__ == '__main__':
         df = pd.DataFrame()
+        case1_df = pd.DataFrame()
         wait_list1 = []
         for c1 in range(10000):
-            case1=simulate(215,3)
-            #print(trial)
+            agent_rate = Agent.get_Agent_Rate(Agent)
+            case1=Flight.simulate(215,3,agent_rate)
+            wait_list1.append([agent_rate,case1])
 
-            wait_list1.append(case1)
-
-
-
-
-        #print(wait_list)
-        avg_time_case1 = (sum(wait_list1) / len(wait_list1))
-       # print('Case 1:Average waiting time in the queue for a passenger is',avg_time_case1)
-
-
+        case1_df = case1_df.append(pd.DataFrame(wait_list1,columns=['Agent_rate','Average_waiting_time']),ignore_index=True)
+        case1_df = case1_df.groupby(['Agent_rate'])[['Average_waiting_time']].mean()
+        print(case1_df)
 
         for c2 in range(10000):
-            #pass
+            agent_rate = Agent.get_Agent_Rate(Agent)
             pass_sim=Passenger.getPass(Passenger)
             agent_sim=Agent_Serves_Passenger.getAgent(Agent_Serves_Passenger)
-            case2=simulate(pass_sim,agent_sim)
-
+            case2=Flight.simulate(pass_sim,agent_sim,agent_rate)
             wait_list2=[[pass_sim,agent_sim,case2]]
             df = df.append(pd.DataFrame(wait_list2,columns=['No_of_passengers', 'No_of_agents', 'Average_waiting_time']),ignore_index=True)
 
-        #df['Average_waiting_time']  = df['Average_waiting_time'] / 60
-
-        #print(df)
         df1 = df.groupby(['No_of_passengers', 'No_of_agents'])[['Average_waiting_time']].mean()
-        #print(df1)
+        print(df1)
 
 
         for c3 in range(10000):
@@ -295,17 +242,14 @@ if __name__ == '__main__':
             flight_passenger3=flight[2]
             agent_num=Agent_Serves_Passenger.getAgent(Agent_Serves_Passenger)
             agent_rate=Agent.get_Agent_Rate(Agent)
-
-            case3=flight_simulator(flight_passenger1,flight_passenger2,flight_passenger3,agent_rate,agent_num)
+            case3=Flight.flight_simulator(flight_passenger1,flight_passenger2,flight_passenger3,agent_rate,agent_num)
 
             wait_list3 = [[flight_passenger1,flight_passenger2,flight_passenger3,agent_num,case3]]
             df = df.append(
                 pd.DataFrame(wait_list3, columns=['Flight1', 'Flight2', 'Flight3','No_of_agents','Average_waiting_time']),
                 ignore_index=True,sort=True)
 
-        # df['Average_waiting_time']  = df['Average_waiting_time'] / 60
 
-        # print(df)
         df2 = df.groupby(['Flight1', 'Flight2', 'Flight3','No_of_agents'])[['Average_waiting_time']].mean()
         print(df2)
 
