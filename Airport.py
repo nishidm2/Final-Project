@@ -133,6 +133,11 @@ class Agent_Serves_Passenger:
 
         return agent_num
 
+    def getFamilySize(self)->int:
+        family_list=[1,1,1,1,2,2,2,3,3,3,4,4]
+        familysize=random.choice(family_list)
+        return familysize
+
     def compute(self,pass_num, queue1,waiting_Times,queue_len,serving_time,checkin_agent)->list:
         """
                 This function computes the waiting times of all the passengers lined in the queue during the check-in process.
@@ -185,11 +190,11 @@ class Flight:
 
         :param agent_num: number of agents serving passengers
         :param agent_rate: rate at which each agent serves the passenger.
-        :return:
+        :return:average waiting time for each passenger.
         """
         waiting_Times = []
         serving_time = Agent.Serving_Time(agent_num, agent_rate)
-        airport_agent = Agent_Serves_Passenger(agent_num,agent_rate)  # creating object of class Cashier_serving_Customer
+        airport_agent = Agent_Serves_Passenger(agent_num,agent_rate)  # creating object of class Agent_Serves_Passenger
           # list for storing wait time of each passenger
         queue = PassengerQueue()
         no_of_pass =int( pass_num / agent_num) #dividing the number of passengers served per agent to get the rate
@@ -263,6 +268,7 @@ if __name__ == '__main__':
             agent_rate = Agent.get_Agent_Rate(Agent)
             case1=Flight.simulate(215,3,agent_rate)
             wait_list1.append([agent_rate,case1])
+            
 
         case1_df = case1_df.append(pd.DataFrame(wait_list1,columns=['Agent_rate','Average_waiting_time']),ignore_index=True)
         case1_df = case1_df.groupby(['Agent_rate'])[['Average_waiting_time']].mean()
@@ -277,7 +283,7 @@ if __name__ == '__main__':
             df = df.append(pd.DataFrame(wait_list2,columns=['No_of_passengers', 'No_of_agents', 'Average_waiting_time']),ignore_index=True)
 
         df1 = df.groupby(['No_of_passengers', 'No_of_agents'])[['Average_waiting_time']].mean()
-        print(df1)
+        # print(df1)
 
 
         for c3 in range(10000):
@@ -296,7 +302,7 @@ if __name__ == '__main__':
 
 
         df2 = df.groupby(['Flight1', 'Flight2', 'Flight3','No_of_agents'])[['Average_waiting_time']].mean()
-        print(df2)
+        # print(df2)
 
 
 
