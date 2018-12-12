@@ -1,4 +1,4 @@
-from random import choice, randint, shuffle
+from random import choice
 import pandas  as pd
 import random
 import matplotlib.pyplot as plt
