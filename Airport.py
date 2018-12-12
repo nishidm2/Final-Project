@@ -1,8 +1,7 @@
 from random import choice, randint, shuffle
-from collections import Counter, defaultdict
 import pandas  as pd
 import random
-
+import matplotlib.pyplot as plt
 
 class PassengerQueue:
     """
@@ -150,7 +149,6 @@ class Agent_Serves_Passenger:
                 :return: average waiting time that each passenger has to stand in the queue to board the flight.
         """
         for i in range(pass_num):
-            # When the customer has arrived at the restaurant and is pushed into the queue
             Passenger.wait_time_queue = queue_len * serving_time #calculates the waiting time in the queue.
             queue1.enqueue(Passenger.getPass(Passenger)) #initialise the queue
             # When the passenger at the counter has been served
@@ -268,11 +266,12 @@ if __name__ == '__main__':
             agent_rate = Agent.get_Agent_Rate(Agent)
             case1=Flight.simulate(215,3,agent_rate)
             wait_list1.append([agent_rate,case1])
-            
+
 
         case1_df = case1_df.append(pd.DataFrame(wait_list1,columns=['Agent_rate','Average_waiting_time']),ignore_index=True)
         case1_df = case1_df.groupby(['Agent_rate'])[['Average_waiting_time']].mean()
         print(case1_df)
+
 
         for c2 in range(10000):
             agent_rate = Agent.get_Agent_Rate(Agent)
@@ -283,7 +282,7 @@ if __name__ == '__main__':
             df = df.append(pd.DataFrame(wait_list2,columns=['No_of_passengers', 'No_of_agents', 'Average_waiting_time']),ignore_index=True)
 
         df1 = df.groupby(['No_of_passengers', 'No_of_agents'])[['Average_waiting_time']].mean()
-        # print(df1)
+        print(df1)
 
 
         for c3 in range(10000):
@@ -302,9 +301,33 @@ if __name__ == '__main__':
 
 
         df2 = df.groupby(['Flight1', 'Flight2', 'Flight3','No_of_agents'])[['Average_waiting_time']].mean()
-        # print(df2)
+        print(df2)
 
 
+
+
+        # Plotting graphs
+
+
+        # For scenario 1
+        case1_df.reset_index().plot(x='Agent_rate', y='Average_waiting_time', kind='bar', legend=None)
+        plt.xlabel('Agent_rate (in seconds)')
+        plt.ylabel('Average_waiting_time (in mins)')
+
+        #For scenario 2
+        fig, ax = plt.subplots(figsize=(15, 7))
+        df.groupby(['No_of_passengers', 'No_of_agents'])[['Average_waiting_time']].mean().unstack().plot(ax=ax,kind='bar')
+        ax.set_xlabel('No_of_passengers')
+        ax.set_ylabel('Average_waiting_time')
+
+        #For scenario 3
+        fig, ax = plt.subplots(figsize=(15, 7))
+        df.groupby(['Flight1', 'Flight2', 'Flight3', 'No_of_agents'])[['Average_waiting_time']].mean().unstack().plot(
+            ax=ax, kind='bar')
+        ax.set_xlabel('No_of_passengers from different flights')
+        ax.set_ylabel('Average_waiting_time')
+
+        plt.show()
 
 
 
