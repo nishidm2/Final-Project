@@ -1,3 +1,10 @@
+"""
+
+Simulation for airport check-in process
+and to calculate the average waiting time
+a passenger has to wait in the queue before being served.
+Also, there are variable parameters which determine eclectic results at the end of the simulation.
+"""
 from random import choice
 import pandas  as pd
 import random
@@ -73,11 +80,11 @@ class Agent:
 
     def Serving_Time(agent_num,rate)->float:
         """
-
         :param rate: speed at which an agent is supposed to attend a passenger.
         :return: returns the serving time in minutes.
+         >>> Agent.Serving_Time(3,300)
+         100.0
         """
-
 
         return rate / agent_num
 
@@ -115,6 +122,9 @@ class Agent_Serves_Passenger:
 
         :param agent_num: Number of agents serving the passengers boarding the airplane.
         :return: amount of passengers being served.
+        >>> Agent_Serves_Passenger.passengers_served(300,3)
+        54
+
         """
         pass_num = 5400 / agent_rate
         total_pass_num = pass_num * agent_num
@@ -133,6 +143,7 @@ class Agent_Serves_Passenger:
         return agent_num
 
     def getFamilySize(self)->int:
+
         family_list=[1,1,1,1,2,2,2,3,3,3,4,4]
         familysize=random.choice(family_list)
         return familysize
@@ -281,8 +292,8 @@ if __name__ == '__main__':
             wait_list2=[[pass_sim,agent_sim,case2]]
             df = df.append(pd.DataFrame(wait_list2,columns=['No_of_passengers', 'No_of_agents', 'Average_waiting_time']),ignore_index=True)
 
-        df1 = df.groupby(['No_of_passengers', 'No_of_agents'])[['Average_waiting_time']].mean()
-        print(df1)
+        case2_df= df.groupby(['No_of_passengers', 'No_of_agents'])[['Average_waiting_time']].mean()
+        print(case2_df)
 
 
         for c3 in range(10000):
@@ -300,8 +311,8 @@ if __name__ == '__main__':
                 ignore_index=True,sort=True)
 
 
-        df2 = df.groupby(['Flight1', 'Flight2', 'Flight3','No_of_agents'])[['Average_waiting_time']].mean()
-        print(df2)
+        case3_df = df.groupby(['Flight1', 'Flight2', 'Flight3','No_of_agents'])[['Average_waiting_time']].mean()
+        print(case3_df)
 
 
 
@@ -316,13 +327,13 @@ if __name__ == '__main__':
 
         #For scenario 2
         fig, ax = plt.subplots(figsize=(15, 7))
-        df.groupby(['No_of_passengers', 'No_of_agents'])[['Average_waiting_time']].mean().unstack().plot(ax=ax,kind='bar')
+        case2_df.groupby(['No_of_passengers', 'No_of_agents'])[['Average_waiting_time']].mean().unstack().plot(ax=ax,kind='bar')
         ax.set_xlabel('No_of_passengers')
         ax.set_ylabel('Average_waiting_time')
 
         #For scenario 3
         fig, ax = plt.subplots(figsize=(15, 7))
-        df.groupby(['Flight1', 'Flight2', 'Flight3', 'No_of_agents'])[['Average_waiting_time']].mean().unstack().plot(
+        case3_df.groupby(['Flight1', 'Flight2', 'Flight3', 'No_of_agents'])[['Average_waiting_time']].mean().unstack().plot(
             ax=ax, kind='bar')
         ax.set_xlabel('No_of_passengers from different flights')
         ax.set_ylabel('Average_waiting_time')
