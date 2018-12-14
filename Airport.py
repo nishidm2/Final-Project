@@ -1,6 +1,4 @@
 """
-
-
 IS 590 PR Final Project on Monte Carlo Simulation.
 
 By Nishi Mehta and Devansh Gandhi.
@@ -24,7 +22,7 @@ class PassengerQueue:
 
         self.items=[]
 
-    def isEmpty(self):
+    def is_empty(self):
         return self.items == []
 
     def enqueue(self, item):
@@ -49,7 +47,7 @@ class Passenger:
         return
 
 
-    def getPass(self)->int:
+    def get_pass(self)->int:
          """
          Using pseudo- random generator, we generate the data required such as number of passengers.
 
@@ -68,7 +66,7 @@ class Passenger:
         len_of_queue = random.randint(1,pass_num) #randint to produce numbers out of random.
         return len_of_queue
 
-    def getFamilySize(self)->int:
+    def get_family_size(self)->int:
         """
         To calculate the number of family members arriving together at the airport for the check-in process.
         :return: number of family members to be considered for a particular simulation.
@@ -86,7 +84,7 @@ class Agent:
     """
 
 
-    def get_Agent_Rate(self)->int:
+    def get_agent_rate(self)->int:
         """
 
         :return: random integer from the list of choices provided for the time an agent should serve.
@@ -94,18 +92,18 @@ class Agent:
         agent_list=[120,180,240,300]
         return choice(agent_list)
 
-    def Serving_Time(agent_num,rate)->float:
+    def serving_time(agent_num,rate)->float:
         """
         :param rate: speed at which an agent is supposed to attend a passenger.
         :return: returns the serving time in minutes.
-         >>> Agent.Serving_Time(3,300)
+         >>> Agent.serving_time(3,300)
          100.0
         """
 
         return rate / agent_num
 
 
-class Agent_Serves_Passenger:
+class agent_Serves_Passenger:
     """
     This class describes  check-in agents and the total number of passengers they serve for a definite time period.
     """
@@ -116,12 +114,12 @@ class Agent_Serves_Passenger:
         self.presentPassenger = None
         self.time_rate=0
 
-    def setIdle(self):
+    def set_idle(self):
 
             if self.time_rate ==0:
                 self.presentPassenger = None
 
-    def isBusy(self)->bool:
+    def is_busy(self)->bool:
         """
         This function evaluates whether the client is busy serving a passenger or not.
         :return: A boolean value either True or False
@@ -138,7 +136,7 @@ class Agent_Serves_Passenger:
 
         :param agent_num: Number of agents serving the passengers boarding the airplane.
         :return: amount of passengers being served.
-        >>> Agent_Serves_Passenger.passengers_served(300,3)
+        >>> agent_Serves_Passenger.passengers_served(300,3)
         54
 
         """
@@ -146,7 +144,7 @@ class Agent_Serves_Passenger:
         total_pass_num = pass_num * agent_num
         return int(total_pass_num)
 
-    def getAgent(self)->int:
+    def get_agent(self)->int:
         """
     Using pseudo- random generator, we generate the data required such as number of check-in agents
         required to serve the customers.Utilisation will be checked upon as a result of simulation.
@@ -159,7 +157,7 @@ class Agent_Serves_Passenger:
         return agent_num
 
 
-    def compute(self,pass_num, queue1,waiting_Times,queue_len,serving_time,checkin_agent,no_of_fam_members)->list:
+    def compute(self,pass_num, queue1,waiting_times,queue_len,serving_time,checkin_agent,no_of_fam_members)->list:
         """
                 This function computes the waiting times of all the passengers lined in the queue during the check-in process.
                 :param pass-num: No of passengers on a flight and waiting in the queue.
@@ -172,17 +170,17 @@ class Agent_Serves_Passenger:
         """
         for i in range(pass_num):
             Passenger.wait_time_queue = queue_len * serving_time #calculates the waiting time in the queue.
-            queue1.enqueue(Passenger.getPass(Passenger)) #initialise the queue
+            queue1.enqueue(Passenger.get_pass(Passenger)) #initialise the queue
             # When the passenger at the counter has been served
-            if (not checkin_agent.isBusy() and (not queue1.isEmpty())):
+            if (not checkin_agent.is_busy() and (not queue1.is_empty())):
                 queue1.dequeue() # check if the queue is empty or not
                 waiting_time = ((Passenger.wait_time_queue / no_of_fam_members) + agent_rate)
-                waiting_Times.append(waiting_time)
+                waiting_times.append(waiting_time)
 
                 # calculates the wait time for each customer and appends it to the list of waitingTimes
-            checkin_agent.setIdle()  # current passenger has now left and the agent is available to serve the next passenger
+            checkin_agent.set_idle()  # current passenger has now left and the agent is available to serve the next passenger
 
-        return waiting_Times
+        return waiting_times
 
 
 class Flight:
@@ -213,15 +211,15 @@ class Flight:
         :param no_of_fam_members:family size arriving toegther at the airport.
         :return:average waiting time for each passenger.
         """
-        waiting_Times = []
-        serving_time = Agent.Serving_Time(agent_num, agent_rate)
-        airport_agent = Agent_Serves_Passenger(agent_num,agent_rate)  # creating object of class Agent_Serves_Passenger
+        waiting_times = []
+        serving_time = Agent.serving_time(agent_num, agent_rate)
+        airport_agent = agent_Serves_Passenger(agent_num,agent_rate)  # creating object of class Agent_Serves_Passenger
           # list for storing wait time of each passenger
         queue = PassengerQueue()
         no_of_pass =int( pass_num / agent_num) #dividing the number of passengers served per agent to get the rate
         queue_len = Passenger.queue_length(Passenger, no_of_pass) #determines the length of the queue.
-        wait_Times=Agent_Serves_Passenger.compute(Agent_Serves_Passenger,pass_num, queue,waiting_Times, queue_len, serving_time, airport_agent,no_of_fam_members)
-        average_waiting_time=(sum(wait_Times)/len(wait_Times))/60
+        wait_times=agent_Serves_Passenger.compute(agent_Serves_Passenger,pass_num, queue,waiting_times, queue_len, serving_time, airport_agent,no_of_fam_members)
+        average_waiting_time=(sum(wait_times)/len(wait_times))/60
         return average_waiting_time
 
     def flight_simulator(flight_passenger1,flight_passenger2,flight_passenger3,agent_rate,agent_num,no_of_fam_members)->float:
@@ -235,12 +233,12 @@ class Flight:
         :param no_of_fam_members: family size arriving together at the airport for the process.
         :return: average waiting time of each passenger.
         """
-        wait_Times=[]
+        wait_times1=[]
         queue1 = PassengerQueue()
-        checkin_agent = Agent_Serves_Passenger(agent_num, agent_rate)
-        serving_time = Agent.Serving_Time(agent_num, agent_rate)
+        checkin_agent = agent_Serves_Passenger(agent_num, agent_rate)
+        serving_time = Agent.serving_time(agent_num, agent_rate)
 
-        served=Agent_Serves_Passenger.passengers_served(agent_rate,agent_num)
+        served=agent_Serves_Passenger.passengers_served(agent_rate,agent_num)
 
         if flight_passenger1 < served:
             pass_num=flight_passenger1
@@ -253,7 +251,7 @@ class Flight:
         no_of_pass = int(pass_num / agent_num)
         queue_len = Passenger.queue_length(Passenger, no_of_pass)
 
-        wait_Times1 = Agent_Serves_Passenger.compute(Agent_Serves_Passenger, pass_num, queue1, wait_Times, queue_len,
+        wait_times2 = agent_Serves_Passenger.compute(agent_Serves_Passenger, pass_num, queue1, wait_times1, queue_len,
                                                     serving_time, checkin_agent,no_of_fam_members)
 
 
@@ -267,7 +265,7 @@ class Flight:
         no_of_pass = int(pass_num / agent_num)
         queue_len = Passenger.queue_length(Passenger, no_of_pass)
 
-        wait_Times2 = Agent_Serves_Passenger.compute(Agent_Serves_Passenger, pass_num, queue1, wait_Times1, queue_len,
+        wait_times3 = agent_Serves_Passenger.compute(agent_Serves_Passenger, pass_num, queue1, wait_times2, queue_len,
                                                      serving_time, checkin_agent,no_of_fam_members)
 
 
@@ -275,10 +273,10 @@ class Flight:
         no_of_pass = int(pass_num / agent_num)
         queue_len = Passenger.queue_length(Passenger, no_of_pass)
 
-        wait_Times3 = Agent_Serves_Passenger.compute(Agent_Serves_Passenger, pass_num, queue1, wait_Times2, queue_len,
+        wait_times4 = agent_Serves_Passenger.compute(agent_Serves_Passenger, pass_num, queue1, wait_times3, queue_len,
                                                      serving_time, checkin_agent,no_of_fam_members)
 
-        avg_waiting_time=(sum(wait_Times3)/len(wait_Times3))/60 #average in minuntes
+        avg_waiting_time=(sum(wait_times3)/len(wait_times3))/60 #average in minuntes
         return avg_waiting_time
 
 
@@ -292,7 +290,7 @@ if __name__ == '__main__':
 
         # c represents case number here
         for c1 in range(10000):
-            agent_rate = Agent.get_Agent_Rate(Agent)
+            agent_rate = Agent.get_agent_rate(Agent)
             case1=Flight.simulate(215,3,agent_rate,1)
             wait_list1.append([agent_rate,case1])
 
@@ -304,9 +302,9 @@ if __name__ == '__main__':
         print('Case 2 : Average Waiting Time for varying Number of passengers and number of agents')
 
         for c2 in range(10000):
-            agent_rate = Agent.get_Agent_Rate(Agent)
-            pass_sim=Passenger.getPass(Passenger)
-            agent_sim=Agent_Serves_Passenger.getAgent(Agent_Serves_Passenger)
+            agent_rate = Agent.get_agent_rate(Agent)
+            pass_sim=Passenger.get_pass(Passenger)
+            agent_sim=agent_Serves_Passenger.get_agent(agent_Serves_Passenger)
             case2=Flight.simulate(pass_sim,agent_sim,agent_rate,1)
             wait_list2=[[pass_sim,agent_sim,case2]]
             df = df.append(pd.DataFrame(wait_list2,columns=['No_of_passengers', 'No_of_agents', 'Average_waiting_time']),ignore_index=True)
@@ -321,8 +319,8 @@ if __name__ == '__main__':
             flight_passenger1 = flight[0]
             flight_passenger2=flight[1]
             flight_passenger3=flight[2]
-            agent_num=Agent_Serves_Passenger.getAgent(Agent_Serves_Passenger)
-            agent_rate=Agent.get_Agent_Rate(Agent)
+            agent_num=agent_Serves_Passenger.get_agent(agent_Serves_Passenger)
+            agent_rate=Agent.get_agent_rate(Agent)
             case3=Flight.flight_simulator(flight_passenger1,flight_passenger2,flight_passenger3,agent_rate,agent_num,1)
 
             wait_list3 = [[flight_passenger1,flight_passenger2,flight_passenger3,agent_num,case3]]
@@ -337,10 +335,10 @@ if __name__ == '__main__':
         print('Case 4 : Average Waiting Time for varying Number of passengers and number of family members')
 
         for c4 in range(10000):
-            agent_rate = Agent.get_Agent_Rate(Agent)
-            pass_sim=Passenger.getPass(Passenger)
+            agent_rate = Agent.get_agent_rate(Agent)
+            pass_sim=Passenger.get_pass(Passenger)
             #agent_sim=Agent_Serves_Passenger.getAgent(Agent_Serves_Passenger)
-            family_sim=Passenger.getFamilySize(Passenger)
+            family_sim=Passenger.get_family_size(Passenger)
             case4=Flight.simulate(pass_sim,3,agent_rate,family_sim)
             wait_list4=[[pass_sim,family_sim,case4]]
             df = df.append(pd.DataFrame(wait_list4,columns=['No_of_passengers', 'No_of_Family_Members','Average_waiting_time']),ignore_index=True,sort=False)
