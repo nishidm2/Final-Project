@@ -17,19 +17,26 @@ Various scenarios were set up to study the effects of multiple flights, number o
 
 •Third case is evaluated on the basis of changing the number of flights along with the number of passengers and check-in agents.
 
+•Fourth case is evaluated on the condition of grouping the number of passengers with families together on the flight and then comparing the results as to one passenger.It is for a single flight only.
+
+
+
 
 ## Simulation's variables of uncertainty
 List and describe your simulation's variables of uncertainty (where you're using pseudo-random number generation). For each such variable, how did you decide the range and probability distribution to use?  Do you think it's a good representation of reality?
-Variable 1: Agent rate and number o0f passengers on one flight.
+Variable 1: Agent rate and number of passengers on one flight.
 
 Variable 2: Number of check-in agents and passengers.
 
 Variable 3: Number of flights.
 
+Variable 4: Number of passengers with families and agent rate.
+
 ## Hypothesis or hypotheses before running the simulation:
 We considered the following hyposthesis:
 1)The average waiting time decreases as the number of check-in counters increases.
 2)Also, as the number of passengers increases, the waiting time in the queue increases.
+3)When families are considered in the queue, the average waiting time significantly decreases as seen.
 This is evident from the results obtained and the graphical display using uniform distribution.
 
 
