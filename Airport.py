@@ -63,7 +63,7 @@ class Passenger:
 
          :return: number of passengers
         """
-        len_of_queue = random.randint(1,pass_num) #randint to produce numbers out of random.
+        len_of_queue = random.randint(1,pass_num) #randint to produce numbers out of random uniform distribution.
         return len_of_queue
 
     def get_family_size(self)->int:
